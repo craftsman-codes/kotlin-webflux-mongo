@@ -5,22 +5,19 @@ import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
 import reactor.core.publisher.Flux
 import test.User
+import test.UserRepository
 import test.formatDate
 import java.time.LocalDate
 
 @Suppress("UNUSED_PARAMETER")
-class UserHandler {
+class UserHandler(private val repository: UserRepository) {
 
-  private val users = Flux.just(
-      User("Foo", "Foo", LocalDate.now().minusDays(1)),
-      User("Bar", "Bar", LocalDate.now().minusDays(10)),
-      User("Baz", "Baz", LocalDate.now().minusDays(100)))
 
   fun findAll(req: ServerRequest) =
-      ok().body(users)
+      ok().body(repository.findAll())
 
   fun findAllView(req: ServerRequest) =
-      ok().render("users", mapOf("users" to users.map { it.toDto() }))
+      ok().render("users", mapOf("users" to repository.findAll().map { it.toDto() }))
 }
 
 class UserDto(val firstName: String, val lastName: String, val birthDate: String)
